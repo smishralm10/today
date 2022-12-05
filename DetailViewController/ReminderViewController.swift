@@ -59,9 +59,9 @@ class ReminderViewController: UICollectionViewController {
     private func updateSnapshotForEditing() {
         var snapshot = Snapshot()
         snapshot.appendSections([.title, .date, .notes])
-        snapshot.appendItems([.header(Section.title.name)], toSection: .title)
-        snapshot.appendItems([.header(Section.date.name)], toSection: .date)
-        snapshot.appendItems([.header(Section.notes.name)], toSection: .notes)
+        snapshot.appendItems([.header(Section.title.name), .editText(reminder.title)], toSection: .title)
+        snapshot.appendItems([.header(Section.date.name), .editDate(reminder.dueDate)], toSection: .date)
+        snapshot.appendItems([.header(Section.notes.name), .editText(reminder.notes)], toSection: .notes)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
@@ -69,15 +69,15 @@ class ReminderViewController: UICollectionViewController {
         let section = section(for: indexPath)
         switch (section, row) {
         case(_, .header(let title)):
-            var cellConfiguration = cell.defaultContentConfiguration()
-            cellConfiguration.text = title
-            cell.contentConfiguration = cellConfiguration
+            cell.contentConfiguration = headerConfiguration(for: cell, with: title)
         case(.view, _):
-            var cellConfiguration = cell.defaultContentConfiguration()
-            cellConfiguration.text = text(for: row)
-            cellConfiguration.textProperties.font = UIFont.preferredFont(forTextStyle: row.textStyle)
-            cellConfiguration.image = row.image
-            cell.contentConfiguration = cellConfiguration
+            cell.contentConfiguration = defualtConfiguration(for: cell, at: row)
+        case(.title, .editText(let title)):
+            cell.contentConfiguration = titleConfiguartion(for: cell, with: title)
+        case(.date, .editDate(let date)):
+            cell.contentConfiguration = dateConfiguration(for: cell, with: date)
+        case(.notes, .editText(let notes)):
+            cell.contentConfiguration = notesConfiguration(for: cell, with: notes)
         default:
             fatalError("No matching combination for section and row")
         }
@@ -92,18 +92,4 @@ class ReminderViewController: UICollectionViewController {
         return section
     }
     
-    func text(for row: Row) -> String? {
-        switch row {
-        case .viewDate:
-            return reminder.dueDate.dayText
-        case .viewTitle:
-            return reminder.title
-        case .viewNotes:
-            return reminder.notes
-        case .viewTime:
-            return reminder.dueDate.formatted(date: .omitted, time: .shortened)
-        default:
-            return nil
-        }
-    }
 }
