@@ -12,11 +12,19 @@ class ReminderViewController: UICollectionViewController {
     private typealias DataSource = UICollectionViewDiffableDataSource<Section, Row>
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Row>
     
-    var reminder: Reminder
+    var reminder: Reminder {
+        didSet {
+            onChange(reminder)
+        }
+    }
+    var workingReminder: Reminder
+    var onChange: (Reminder) -> Void
     private var dataSource: DataSource!
     
-    init(reminder: Reminder) {
+    init(reminder: Reminder, onChange: @escaping (Reminder) -> Void) {
         self.reminder = reminder
+        self.workingReminder = reminder
+        self.onChange = onChange
         var listConfiguartion = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
         listConfiguartion.showsSeparators = false
         listConfiguartion.headerMode = .firstItemInSection
@@ -41,12 +49,16 @@ class ReminderViewController: UICollectionViewController {
     
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
-        
         if editing {
-            updateSnapshotForEditing()
+            prepareForEditing()
         } else {
-            updateSnapshotForViewing()
+            prepareForViewing()
         }
+    }
+    
+    @objc func didCancelEdit() {
+       workingReminder = reminder
+        setEditing(false, animated: true)
     }
     
     private func updateSnapshotForViewing() {
@@ -56,28 +68,41 @@ class ReminderViewController: UICollectionViewController {
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
+    private func prepareForViewing() {
+        navigationItem.leftBarButtonItem = nil
+        if workingReminder != reminder {
+            reminder = workingReminder
+        }
+        updateSnapshotForViewing()
+    }
+    
     private func updateSnapshotForEditing() {
         var snapshot = Snapshot()
         snapshot.appendSections([.title, .date, .notes])
-        snapshot.appendItems([.header(Section.title.name)], toSection: .title)
-        snapshot.appendItems([.header(Section.date.name)], toSection: .date)
-        snapshot.appendItems([.header(Section.notes.name)], toSection: .notes)
+        snapshot.appendItems([.header(Section.title.name), .editText(reminder.title)], toSection: .title)
+        snapshot.appendItems([.header(Section.date.name), .editDate(reminder.dueDate)], toSection: .date)
+        snapshot.appendItems([.header(Section.notes.name), .editText(reminder.notes)], toSection: .notes)
         dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    private func prepareForEditing() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didCancelEdit))
+        updateSnapshotForEditing()
     }
     
     func cellRegistrationHandler(cell: UICollectionViewListCell, indexPath: IndexPath, row: Row) {
         let section = section(for: indexPath)
         switch (section, row) {
         case(_, .header(let title)):
-            var cellConfiguration = cell.defaultContentConfiguration()
-            cellConfiguration.text = title
-            cell.contentConfiguration = cellConfiguration
+            cell.contentConfiguration = headerConfiguration(for: cell, with: title)
         case(.view, _):
-            var cellConfiguration = cell.defaultContentConfiguration()
-            cellConfiguration.text = text(for: row)
-            cellConfiguration.textProperties.font = UIFont.preferredFont(forTextStyle: row.textStyle)
-            cellConfiguration.image = row.image
-            cell.contentConfiguration = cellConfiguration
+            cell.contentConfiguration = defualtConfiguration(for: cell, at: row)
+        case(.title, .editText(let title)):
+            cell.contentConfiguration = titleConfiguartion(for: cell, with: title)
+        case(.date, .editDate(let date)):
+            cell.contentConfiguration = dateConfiguration(for: cell, with: date)
+        case(.notes, .editText(let notes)):
+            cell.contentConfiguration = notesConfiguration(for: cell, with: notes)
         default:
             fatalError("No matching combination for section and row")
         }
@@ -92,18 +117,4 @@ class ReminderViewController: UICollectionViewController {
         return section
     }
     
-    func text(for row: Row) -> String? {
-        switch row {
-        case .viewDate:
-            return reminder.dueDate.dayText
-        case .viewTitle:
-            return reminder.title
-        case .viewNotes:
-            return reminder.notes
-        case .viewTime:
-            return reminder.dueDate.formatted(date: .omitted, time: .shortened)
-        default:
-            return nil
-        }
-    }
 }
