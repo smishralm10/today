@@ -44,6 +44,15 @@ extension ReminderListViewController {
         cell.backgroundConfiguration = backgroundConfiguration
     }
     
+    func add(reminder: Reminder) {
+        reminders.append(reminder)
+    }
+    
+    func deleteReminder(with id: Reminder.ID) {
+        let index = reminders.indexOfReminder(with: id)
+        reminders.remove(at: index)
+    }
+    
     func completeReminder(with id: Reminder.ID) {
         var reminder = reminder(for: id)
         reminder.isComplete.toggle()
