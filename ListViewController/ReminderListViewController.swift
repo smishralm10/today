@@ -12,10 +12,21 @@ class ReminderListViewController: UICollectionViewController {
         return reminders.filter{ listStyle.shouldInclude(date: $0.dueDate) }.sorted { $0.dueDate < $1.dueDate }
     }
     var listStyleSegmentedControl = UISegmentedControl(items: [ReminderListStyle.today.name, ReminderListStyle.future.name, ReminderListStyle.all.name])
+    var headerView: ProgressHeaderView?
+    var progress: CGFloat {
+        let chunkSize = 1.0 / CGFloat(filteredReminders.count)
+        let progress = filteredReminders.reduce(0.0) { partialResult, reminder in
+            let chunk  = reminder.isComplete ? chunkSize : 0
+            return partialResult + chunk
+        }
+        return progress
+    }
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        collectionView.backgroundColor = .todayGradientFutureBegin
         
         let listLayout = listLayout()
         collectionView.collectionViewLayout = listLayout
@@ -34,6 +45,12 @@ class ReminderListViewController: UICollectionViewController {
         listStyleSegmentedControl.addTarget(self, action: #selector(didChangeListStyle(_:)), for: .valueChanged)
         navigationItem.titleView = listStyleSegmentedControl
         
+        let headerRegistration = UICollectionView.SupplementaryRegistration(elementKind: ProgressHeaderView.elementKind, handler: supplementaryRegistrationHandler)
+        
+        dataSource.supplementaryViewProvider = { supplementaryView, elementKind, indexPath in
+            return self.collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
+        }
+        
         updateSnapshot()
         
         collectionView.dataSource = dataSource
@@ -43,6 +60,11 @@ class ReminderListViewController: UICollectionViewController {
         let id = filteredReminders[indexPath.item].id
         shotDetail(for: id)
         return false
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, willDisplaySupplementaryView view: UICollectionReusableView, forElementKind elementKind: String, at indexPath: IndexPath) {
+        guard elementKind == ProgressHeaderView.elementKind, let progressView = view as? ProgressHeaderView else { return }
+        progressView.progress = progress
     }
     
     func shotDetail(for id: Reminder.ID) {
@@ -56,6 +78,7 @@ class ReminderListViewController: UICollectionViewController {
     
     private func listLayout() -> UICollectionViewCompositionalLayout {
         var listConfiguration = UICollectionLayoutListConfiguration(appearance: .grouped)
+        listConfiguration.headerMode = .supplementary
         listConfiguration.showsSeparators = false
         listConfiguration.trailingSwipeActionsConfigurationProvider = makeSwipeActions
         listConfiguration.backgroundColor = .clear
@@ -71,6 +94,10 @@ class ReminderListViewController: UICollectionViewController {
             completion(false)
         }
         return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
+    
+    private func supplementaryRegistrationHandler(progressView: ProgressHeaderView, elmentKind: String, indexPath: IndexPath) {
+        headerView = progressView
     }
 }
 
