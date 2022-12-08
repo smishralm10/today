@@ -27,6 +27,7 @@ class ReminderListViewController: UICollectionViewController {
         super.viewDidLoad()
         
         collectionView.backgroundColor = .todayGradientFutureBegin
+        navigationController?.navigationBar.backgroundColor = .clear
         
         let listLayout = listLayout()
         collectionView.collectionViewLayout = listLayout
