@@ -56,5 +56,9 @@ extension UIColor {
     static var todayProgressUpperBackground: UIColor {
         UIColor(named: "TodayProgressUpperBackground") ?? .systemGray6
     }
+    
+    static var todayAddButtonBackground: UIColor {
+        UIColor(named: "TodayAddButtonBackground") ?? .systemGray
+    }
 }
 

@@ -26,6 +26,7 @@ class ReminderListViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        configureAddButton()
         collectionView.backgroundColor = .todayGradientFutureBegin
         navigationController?.navigationBar.backgroundColor = .clear
         
@@ -37,10 +38,6 @@ class ReminderListViewController: UICollectionViewController {
         dataSource = DataSource(collectionView: collectionView) { (collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: Reminder.ID) in
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
         }
-        
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didPressAddButton(_:)))
-        addButton.accessibilityLabel = NSLocalizedString("Add Reminder", comment: "Add reminder button accessibility label")
-        navigationItem.rightBarButtonItem = addButton
         
         listStyleSegmentedControl.selectedSegmentIndex = listStyle.rawValue
         listStyleSegmentedControl.addTarget(self, action: #selector(didChangeListStyle(_:)), for: .valueChanged)
@@ -80,6 +77,27 @@ class ReminderListViewController: UICollectionViewController {
             self?.updateSnapshot(reloading: [reminder.id])
         }
         navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func configureAddButton() {
+        let widthMultiplier = 0.15
+        let button = UIButton(frame: .zero)
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 28, weight: .medium)
+        let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
+        button.setImage(image, for: .normal)
+        button.tintColor = .todayPrimaryTint
+        button.layer.cornerRadius = (view.bounds.width * widthMultiplier) / 2
+        button.layer.shadowRadius = 10
+        button.layer.shadowOpacity = 0.3
+        button.backgroundColor = .todayAddButtonBackground
+        button.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(button)
+        button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -25).isActive = true
+        button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        button.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: widthMultiplier).isActive = true
+        button.heightAnchor.constraint(equalTo: button.widthAnchor, multiplier: 1).isActive = true //Aspect ration 1:1
+        button.addTarget(self, action: #selector(didPressAddButton(_:)), for: .touchUpInside)
+        button.accessibilityLabel = NSLocalizedString("Add Reminder", comment: "Add reminder button accessibility label")
     }
     
     private func listLayout() -> UICollectionViewCompositionalLayout {
