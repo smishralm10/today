@@ -10,14 +10,17 @@ class ProgressHeaderView: UICollectionReusableView {
             UIView.animate(withDuration: 0.2) { [weak self] in
                 self?.layoutIfNeeded()
             }
+            progressPercentLabel.text = "\(Int(progress * 100.0))%"
         }
     }
     
     private let upperView = UIView(frame: .zero)
     private let lowerView = UIView(frame: .zero)
     private let containerView = UIView(frame: .zero)
+    private let progressPercentLabel = UILabel(frame: .zero)
     private var heightConstraint: NSLayoutConstraint?
     private var valueFormat: String { NSLocalizedString("%d percent", comment: "progress percentage value format") }
+    private var progressPercentFormat: String = NSLocalizedString("%d %", comment: "Completed reminder percentage")
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -72,5 +75,17 @@ class ProgressHeaderView: UICollectionReusableView {
         containerView.backgroundColor = .clear
         upperView.backgroundColor = .todayProgressUpperBackground
         lowerView.backgroundColor = .todayProgressLowerBackground
+        configurePercentLabel()
+    }
+    
+    private func configurePercentLabel() {
+        progressPercentLabel.font = UIFont.preferredFont(forTextStyle: .largeTitle)
+        progressPercentLabel.textColor = .darkGray
+        progressPercentLabel.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(progressPercentLabel)
+        
+        progressPercentLabel.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        progressPercentLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        progressPercentLabel.heightAnchor.constraint(equalTo: widthAnchor, multiplier: 0.2).isActive = true
     }
 }

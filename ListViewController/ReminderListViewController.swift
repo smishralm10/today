@@ -30,25 +30,16 @@ class ReminderListViewController: UICollectionViewController {
         collectionView.backgroundColor = .todayGradientFutureBegin
         navigationController?.navigationBar.backgroundColor = .clear
         
-        let listLayout = listLayout()
+        let listLayout = createLayout()
         collectionView.collectionViewLayout = listLayout
         
-        let cellRegistration = UICollectionView.CellRegistration(handler: cellRegistrationHandler)
-        
-        dataSource = DataSource(collectionView: collectionView) { (collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: Reminder.ID) in
-            return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
-        }
+        configureRegisterCell()
+        configureRegisterSectionHeader()
         
         listStyleSegmentedControl.selectedSegmentIndex = listStyle.rawValue
         listStyleSegmentedControl.addTarget(self, action: #selector(didChangeListStyle(_:)), for: .valueChanged)
         navigationItem.titleView = listStyleSegmentedControl
-        
-        let headerRegistration = UICollectionView.SupplementaryRegistration(elementKind: ProgressHeaderView.elementKind, handler: supplementaryRegistrationHandler)
-        
-        dataSource.supplementaryViewProvider = { supplementaryView, elementKind, indexPath in
-            return self.collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
-        }
-        
+       
         updateSnapshot()
         
         collectionView.dataSource = dataSource
@@ -79,7 +70,7 @@ class ReminderListViewController: UICollectionViewController {
         navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func configureAddButton() {
+    private func configureAddButton() {
         let widthMultiplier = 0.15
         let button = UIButton(frame: .zero)
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 28, weight: .medium)
@@ -92,21 +83,54 @@ class ReminderListViewController: UICollectionViewController {
         button.backgroundColor = .todayAddButtonBackground
         button.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(button)
+        //apply contraints
         button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -25).isActive = true
         button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         button.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: widthMultiplier).isActive = true
-        button.heightAnchor.constraint(equalTo: button.widthAnchor, multiplier: 1).isActive = true //Aspect ration 1:1
+        button.heightAnchor.constraint(equalTo: button.widthAnchor, multiplier: 1).isActive = true //Aspect ratio 1:1
+        // add button action
         button.addTarget(self, action: #selector(didPressAddButton(_:)), for: .touchUpInside)
         button.accessibilityLabel = NSLocalizedString("Add Reminder", comment: "Add reminder button accessibility label")
     }
     
-    private func listLayout() -> UICollectionViewCompositionalLayout {
-        var listConfiguration = UICollectionLayoutListConfiguration(appearance: .grouped)
-        listConfiguration.headerMode = .supplementary
-        listConfiguration.showsSeparators = false
-        listConfiguration.trailingSwipeActionsConfigurationProvider = makeSwipeActions
-        listConfiguration.backgroundColor = .clear
-        return UICollectionViewCompositionalLayout.list(using: listConfiguration)
+    private func createLayout() -> UICollectionViewCompositionalLayout {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
+        group.interItemSpacing = .fixed(10)
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = 10
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 10, trailing: 10)
+        
+        let progressViewSupplementarySize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(1.0))
+        let progressViewSupplementaryItem = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: progressViewSupplementarySize, elementKind: ProgressHeaderView.elementKind, alignment: .top)
+        
+        section.boundarySupplementaryItems = [progressViewSupplementaryItem]
+        
+        let config = UICollectionViewCompositionalLayoutConfiguration()
+        config.interSectionSpacing = 10
+        
+        let layout = UICollectionViewCompositionalLayout(section: section, configuration: config)
+        return layout
+    }
+    
+    private func configureRegisterCell() {
+        let cellRegistration = UICollectionView.CellRegistration(handler: cellRegistrationHandler)
+        
+        dataSource = DataSource(collectionView: collectionView) { (collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: Reminder.ID) in
+            return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
+        }
+    }
+    
+    private func configureRegisterSectionHeader() {
+        let headerRegistration = UICollectionView.SupplementaryRegistration(elementKind: ProgressHeaderView.elementKind, handler: supplementaryRegistrationHandler)
+        
+        dataSource.supplementaryViewProvider = { supplementaryView, elementKind, indexPath in
+            return self.collectionView.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: indexPath)
+        }
     }
     
     private func makeSwipeActions(for indexPath: IndexPath?) -> UISwipeActionsConfiguration? {
