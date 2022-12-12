@@ -34,5 +34,13 @@ extension ReminderListViewController {
         updateSnapshot()
         refreshBackground()
     }
+    
+    
+    @objc func handleLongPressOnCell(_ sender: UILongPressGestureRecognizer) {
+        guard sender.state != .began else { return }
+        let point = sender.location(in: self.collectionView)
+        let indexPath = self.collectionView.indexPathForItem(at: point)
+        configureAlertControllerForCell(at: indexPath)
+    }
 }
 

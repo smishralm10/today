@@ -43,6 +43,8 @@ class ReminderListViewController: UICollectionViewController {
         updateSnapshot()
         
         collectionView.dataSource = dataSource
+        collectionView.isUserInteractionEnabled = true
+        setupLongPressGestureForCollectionViewCell()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -52,7 +54,7 @@ class ReminderListViewController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         let id = filteredReminders[indexPath.item].id
-        shotDetail(for: id)
+        showDetail(for: id)
         return false
     }
     
@@ -61,7 +63,7 @@ class ReminderListViewController: UICollectionViewController {
         progressView.progress = progress
     }
     
-    func shotDetail(for id: Reminder.ID) {
+    func showDetail(for id: Reminder.ID) {
         let reminder = reminder(for: id)
         let viewController = ReminderViewController(reminder: reminder) { [weak self] reminder in
             self?.update(reminder, with: reminder.id)
@@ -135,7 +137,7 @@ class ReminderListViewController: UICollectionViewController {
     
     private func makeSwipeActions(for indexPath: IndexPath?) -> UISwipeActionsConfiguration? {
         guard let indexPath = indexPath, let id = dataSource.itemIdentifier(for: indexPath) else { return nil }
-        let deleteActionTitle = NSLocalizedString("Delete", comment: "Delete actin title")
+        let deleteActionTitle = NSLocalizedString("Delete", comment: "Delete action title")
         let deleteAction = UIContextualAction(style: .destructive, title: deleteActionTitle) { [weak self] _, _, completion in
             self?.deleteReminder(with: id)
             self?.updateSnapshot()
@@ -144,17 +146,53 @@ class ReminderListViewController: UICollectionViewController {
         return UISwipeActionsConfiguration(actions: [deleteAction])
     }
     
-    func refreshBackground() {
-            collectionView.backgroundView = nil
-            let backgroundView = UIView()
-            let gradientLayer = CAGradientLayer.gradientLayer(for: listStyle, in: collectionView.frame)
-            backgroundView.layer.addSublayer(gradientLayer)
-            collectionView.backgroundView = backgroundView
-        }
-    
     private func supplementaryRegistrationHandler(progressView: ProgressHeaderView, elmentKind: String, indexPath: IndexPath) {
         headerView = progressView
     }
+    
+    func configureAlertControllerForCell(at indexPath: IndexPath?) {
+        guard let indexPath = indexPath else { return }
+        let alertController = UIAlertController(title: "Options", message: nil, preferredStyle: .actionSheet)
+        let id = self.filteredReminders[indexPath.item].id
+        let reminder = self.reminder(for: id)
+        let editActionButton = UIAlertAction(title: "Edit", style: .default) { [weak self] action in
+            let viewController = ReminderViewController(reminder: reminder) { [weak self] reminder in
+                self?.update(reminder, with: id)
+                self?.updateSnapshot(reloading: [id])
+            }
+            viewController.setEditing(true, animated: true)
+            self?.navigationController?.pushViewController(viewController, animated: true)
+        }
+        alertController.addAction(editActionButton)
+        
+        let deleteActionButton = UIAlertAction(title: "Delete", style: .destructive) { [weak self] action in
+            self?.deleteReminder(with: id)
+            self?.updateSnapshot()
+        }
+        alertController.addAction(deleteActionButton)
+        
+        let cancelActionButton = UIAlertAction(title: "Cancel", style: .cancel)
+        alertController.addAction(cancelActionButton)
+        self.present(alertController, animated: true)
+    }
+    
+    func refreshBackground() {
+        collectionView.backgroundView = nil
+        let backgroundView = UIView()
+        let gradientLayer = CAGradientLayer.gradientLayer(for: listStyle, in: collectionView.frame)
+        backgroundView.layer.addSublayer(gradientLayer)
+        collectionView.backgroundView = backgroundView
+    }
 }
 
-
+extension ReminderListViewController: UIGestureRecognizerDelegate {
+    private func setupLongPressGestureForCollectionViewCell() {
+        let longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressOnCell(_:)))
+        longPressGestureRecognizer.minimumPressDuration = 0.5
+        longPressGestureRecognizer.delaysTouchesBegan = true
+        longPressGestureRecognizer.numberOfTapsRequired = 1
+        longPressGestureRecognizer.numberOfTouchesRequired = 1
+        longPressGestureRecognizer.delegate = self
+        self.collectionView.addGestureRecognizer(longPressGestureRecognizer)
+    }
+}
