@@ -27,6 +27,7 @@ class TextFieldContentView: UIView, UIContentView {
         addPinnedSubview(textField, insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
         textField.clearButtonMode = .whileEditing
         textField.addTarget(self, action: #selector(didChange(_:)), for: .editingChanged)
+        textField.becomeFirstResponder()
     }
     
     required init?(coder: NSCoder) {

@@ -80,7 +80,7 @@ class ProgressHeaderView: UICollectionReusableView {
     
     private func configurePercentLabel() {
         progressPercentLabel.font = UIFont.preferredFont(forTextStyle: .largeTitle)
-        progressPercentLabel.textColor = .darkGray
+        progressPercentLabel.textColor = .progressPercentTint
         progressPercentLabel.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(progressPercentLabel)
         

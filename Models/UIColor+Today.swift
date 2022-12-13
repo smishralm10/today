@@ -60,5 +60,9 @@ extension UIColor {
     static var todayAddButtonBackground: UIColor {
         UIColor(named: "TodayAddButtonBackground") ?? .systemGray
     }
+    
+    static var progressPercentTint: UIColor {
+        UIColor(named: "ProgressPercentTint") ?? .darkGray
+    }
 }
 

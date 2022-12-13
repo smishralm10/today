@@ -40,8 +40,8 @@ class ReminderViewController: UICollectionViewController {
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
         })
         navigationItem.title = "Reminder"
-        navigationItem.rightBarButtonItem = editButtonItem
         updateSnapshotForViewing()
+        configureBarButtonMenu()
     }
     
     required init?(coder: NSCoder) {
@@ -59,6 +59,10 @@ class ReminderViewController: UICollectionViewController {
                 onChange(workingReminder)
             }
         }
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
     }
     
     @objc func didCancelEdit() {
@@ -92,6 +96,7 @@ class ReminderViewController: UICollectionViewController {
     
     private func prepareForEditing() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didCancelEdit))
+        navigationItem.rightBarButtonItem = editButtonItem
         updateSnapshotForEditing()
     }
     
@@ -111,7 +116,7 @@ class ReminderViewController: UICollectionViewController {
         default:
             fatalError("No matching combination for section and row")
         }
-        cell.tintColor = UIColor(named: "TodayPrimaryTint")
+        cell.tintColor = .todayPrimaryTint
     }
     
     private func section(for indexPath: IndexPath) -> Section {
@@ -122,4 +127,29 @@ class ReminderViewController: UICollectionViewController {
         return section
     }
     
+    private func configureBarButtonMenu() {
+        let menuImage = UIImage(systemName: "ellipsis")
+        let barButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        barButtonItem.image = menuImage
+        barButtonItem.menu = createBarButtonMenu()
+        navigationItem.rightBarButtonItem = barButtonItem
+    }
+    
+    private func createBarButtonMenu() -> UIMenu {
+        return UIMenu(title: "", children: [
+            UIAction(title: "Edit", image: UIImage(systemName: "square.and.pencil"), handler: handleDidPressEditButton),
+            UIAction(title: "Delete", image: UIImage(systemName: "trash"), handler: handleDidPressDeleteButton)
+        ])
+    }
+    
+    private func handleDidPressEditButton(_ action: UIAction) {
+        setEditing(true, animated: true)
+    }
+    
+    private func handleDidPressDeleteButton(_ action: UIAction) {
+        let viewController = navigationController?.viewControllers[0] as? ReminderListViewController
+        viewController?.deleteReminder(with: reminder.id)
+        viewController?.updateSnapshot()
+        navigationController?.popViewController(animated: true)
+    }
 }
