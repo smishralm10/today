@@ -6,7 +6,7 @@ import UIKit
 
 class ReminderListViewController: UICollectionViewController {
     var dataSource: DataSource!
-    var reminders: [Reminder] = Reminder.sampleData
+    var reminders: [Reminder] = []
     var listStyle: ReminderListStyle = .today
     var filteredReminders: [Reminder] {
         return reminders.filter{ listStyle.shouldInclude(date: $0.dueDate) }.sorted { $0.dueDate < $1.dueDate }
@@ -45,6 +45,7 @@ class ReminderListViewController: UICollectionViewController {
         collectionView.dataSource = dataSource
         collectionView.isUserInteractionEnabled = true
         setupLongPressGestureForCollectionViewCell()
+        prepareReminderStore()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -70,6 +71,16 @@ class ReminderListViewController: UICollectionViewController {
             self?.updateSnapshot(reloading: [reminder.id])
         }
         navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func showError(_ error: Error) {
+        let alertTitle = NSLocalizedString("Error", comment: "Error alert title")
+        let alertController = UIAlertController(title: alertTitle, message: error.localizedDescription, preferredStyle: .alert)
+        let actionTitle = NSLocalizedString("Ok", comment: "Alert ok button title")
+        alertController.addAction(UIAlertAction(title: actionTitle, style: .default, handler: { [weak self] _ in
+            self?.dismiss(animated: true)
+        }))
+        present(alertController, animated: true)
     }
     
     private func configureAddButton() {
