@@ -33,6 +33,13 @@ extension ReminderListViewController {
         let reminder = reminder(for: id)
         var contentConfiguration = cell.defaultContentConfiguration()
         contentConfiguration.text = reminder.title
+        if reminder.isComplete {
+            let attributeString: NSMutableAttributedString = NSMutableAttributedString(string: reminder.title)
+            attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 1, range: NSRange(location: 0, length: attributeString.length))
+            attributeString.addAttribute(NSAttributedString.Key.strikethroughColor, value: UIColor.darkGray, range: NSRange(location: 0, length: attributeString.length))
+            attributeString.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.gray, range: NSRange(location: 0, length: attributeString.length))
+            contentConfiguration.attributedText = attributeString
+        }
         contentConfiguration.secondaryText = reminder.dueDate.dayAndTimeText
         contentConfiguration.secondaryTextProperties.font = UIFont.preferredFont(forTextStyle: .caption1)
         cell.contentConfiguration = contentConfiguration
