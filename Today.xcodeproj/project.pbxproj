@@ -38,6 +38,8 @@
 		E168F9532948AF8600330AB4 /* EKEventStore+AsyncFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = E168F9522948AF8600330AB4 /* EKEventStore+AsyncFetch.swift */; };
 		E168F9552948C7F200330AB4 /* Reminder+EKReminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E168F9542948C7F200330AB4 /* Reminder+EKReminder.swift */; };
 		E168F9572948CCA600330AB4 /* ReminderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E168F9562948CCA600330AB4 /* ReminderStore.swift */; };
+		E19CC74F29509CE40093AB9C /* List+EKCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19CC74E29509CE40093AB9C /* List+EKCalendar.swift */; };
+		E19CC7512950A30F0093AB9C /* HomeViewController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E19CC7502950A30F0093AB9C /* HomeViewController+Actions.swift */; };
 		E1B24E41293B26BE0028EEB3 /* ReminderViewController+cellConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B24E40293B26BE0028EEB3 /* ReminderViewController+cellConfiguration.swift */; };
 		E1B24E44293B29140028EEB3 /* UIView+PinnedSubview.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B24E43293B29140028EEB3 /* UIView+PinnedSubview.swift */; };
 		E1B24E46293B31350028EEB3 /* TextFieldContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B24E45293B31350028EEB3 /* TextFieldContentView.swift */; };
@@ -78,6 +80,8 @@
 		E168F9522948AF8600330AB4 /* EKEventStore+AsyncFetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EKEventStore+AsyncFetch.swift"; sourceTree = "<group>"; };
 		E168F9542948C7F200330AB4 /* Reminder+EKReminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Reminder+EKReminder.swift"; sourceTree = "<group>"; };
 		E168F9562948CCA600330AB4 /* ReminderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderStore.swift; sourceTree = "<group>"; };
+		E19CC74E29509CE40093AB9C /* List+EKCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "List+EKCalendar.swift"; sourceTree = "<group>"; };
+		E19CC7502950A30F0093AB9C /* HomeViewController+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeViewController+Actions.swift"; sourceTree = "<group>"; };
 		E1B24E40293B26BE0028EEB3 /* ReminderViewController+cellConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReminderViewController+cellConfiguration.swift"; sourceTree = "<group>"; };
 		E1B24E43293B29140028EEB3 /* UIView+PinnedSubview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+PinnedSubview.swift"; sourceTree = "<group>"; };
 		E1B24E45293B31350028EEB3 /* TextFieldContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldContentView.swift; sourceTree = "<group>"; };
@@ -135,9 +139,9 @@
 		7CB07730270FAEE10042FB15 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				E19CC74D29509CB10093AB9C /* List */,
+				E19CC74C29509C900093AB9C /* Reminder */,
 				7CB0773327178CBA0042FB15 /* Date+Today.swift */,
-				E168F9542948C7F200330AB4 /* Reminder+EKReminder.swift */,
-				7CB07731270FAF0E0042FB15 /* Reminder.swift */,
 				7CB0773527179CBF0042FB15 /* UIColor+Today.swift */,
 				E100B4F5293F041300B723F2 /* ReminderListStyle.swift */,
 				E100B4F9293F803E00B723F2 /* CAGradientLayer+ListStyle.swift */,
@@ -145,7 +149,6 @@
 				E168F9522948AF8600330AB4 /* EKEventStore+AsyncFetch.swift */,
 				E168F9562948CCA600330AB4 /* ReminderStore.swift */,
 				E13E707A294B5C5000846C6A /* EKReminder+Reminder.swift */,
-				E1131ABE294F324D003C4EE9 /* List.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -178,8 +181,27 @@
 			children = (
 				E14E9DFB294DF292008073F4 /* HomeViewController.swift */,
 				E1131AC0294F3556003C4EE9 /* HomeViewController+DataSource.swift */,
+				E19CC7502950A30F0093AB9C /* HomeViewController+Actions.swift */,
 			);
 			path = HomeViewController;
+			sourceTree = "<group>";
+		};
+		E19CC74C29509C900093AB9C /* Reminder */ = {
+			isa = PBXGroup;
+			children = (
+				E168F9542948C7F200330AB4 /* Reminder+EKReminder.swift */,
+				7CB07731270FAF0E0042FB15 /* Reminder.swift */,
+			);
+			path = Reminder;
+			sourceTree = "<group>";
+		};
+		E19CC74D29509CB10093AB9C /* List */ = {
+			isa = PBXGroup;
+			children = (
+				E1131ABE294F324D003C4EE9 /* List.swift */,
+				E19CC74E29509CE40093AB9C /* List+EKCalendar.swift */,
+			);
+			path = List;
 			sourceTree = "<group>";
 		};
 		E1B24E42293B28F30028EEB3 /* ContentViews */ = {
@@ -286,6 +308,7 @@
 				E14E9DFC294DF292008073F4 /* HomeViewController.swift in Sources */,
 				7CB0773B271A1B350042FB15 /* ReminderDoneButton.swift in Sources */,
 				E11ED7A72938850400DC17AD /* ReminderViewController+Row.swift in Sources */,
+				E19CC7512950A30F0093AB9C /* HomeViewController+Actions.swift in Sources */,
 				7CB0773627179CBF0042FB15 /* UIColor+Today.swift in Sources */,
 				7CB07739271894E90042FB15 /* ReminderListViewController+DataSource.swift in Sources */,
 				7CB0771F270FAA1C0042FB15 /* SceneDelegate.swift in Sources */,
@@ -295,6 +318,7 @@
 				E11ED7A429385D7000DC17AD /* ReminderViewController.swift in Sources */,
 				E100B4FA293F803E00B723F2 /* CAGradientLayer+ListStyle.swift in Sources */,
 				7CB07732270FAF0E0042FB15 /* Reminder.swift in Sources */,
+				E19CC74F29509CE40093AB9C /* List+EKCalendar.swift in Sources */,
 				E168F9572948CCA600330AB4 /* ReminderStore.swift in Sources */,
 				E13E707B294B5C5000846C6A /* EKReminder+Reminder.swift in Sources */,
 			);

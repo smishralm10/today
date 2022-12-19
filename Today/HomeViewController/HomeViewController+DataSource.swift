@@ -12,6 +12,8 @@ extension HomeViewController {
     typealias DataSource = UICollectionViewDiffableDataSource<Int, List.ID>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Int, List.ID>
     
+    private var reminderStore: ReminderStore { ReminderStore.shared }
+    
     func cellRegistrationHandler(cell: UICollectionViewListCell, indexPath: IndexPath, id: List.ID) {
        let list = list(for: id)
         var contentConfig = cell.defaultContentConfiguration()
@@ -34,5 +36,27 @@ extension HomeViewController {
     func list(for id: List.ID) -> List {
         let index = lists.indexOfList(with: id)
         return lists[index]
+    }
+    
+    func prepareReminderStore() {
+        Task {
+            do {
+                try await reminderStore.requestAccess()
+                lists = reminderStore.fetchLists()
+                NotificationCenter.default.addObserver(self, selector: #selector(eventStoreChanged(_:)), name: .EKEventStoreChanged, object: nil)
+            } catch TodayError.accessDenied, TodayError.accessRestricted {
+                #if DEBUG
+                lists = List.sampleData
+                #endif
+            } catch {
+                showError(error)
+            }
+            updateSnapshot()
+        }
+    }
+    
+    func reminderStoreChanged() {
+        lists = reminderStore.fetchLists()
+        updateSnapshot()
     }
 }

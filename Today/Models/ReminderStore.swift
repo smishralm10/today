@@ -62,6 +62,14 @@ class ReminderStore {
         return reminders
     }
     
+    func fetchLists() -> [List] {
+        let calendars = ekStore.calendars(for: .reminder)
+        let lists: [List] = calendars.map { calendar in
+            return List(with: calendar)
+        }
+        return lists
+    }
+    
     func remove(with id: Reminder.ID) throws {
         guard isAvailable else {
             throw TodayError.accessDenied

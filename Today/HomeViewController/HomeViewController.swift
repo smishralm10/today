@@ -9,8 +9,8 @@ import UIKit
 
 class HomeViewController: UICollectionViewController {
     var dataSource: DataSource!
-    var lists: [List] = List.sampleData
-
+    var lists: [List] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("My Lists", comment: "home viewcontroller title")
@@ -19,6 +19,7 @@ class HomeViewController: UICollectionViewController {
         collectionView.collectionViewLayout = createListLayout()
         collectionView.dataSource = dataSource
         registerCellWithDataSource()
+        prepareReminderStore()
         updateSnapshot()
     }
     
@@ -45,4 +46,13 @@ class HomeViewController: UICollectionViewController {
         })
     }
     
+    func showError(_ error: Error) {
+        let alertTitle = NSLocalizedString("Error", comment: "Error alert title")
+        let alertController = UIAlertController(title: alertTitle, message: error.localizedDescription, preferredStyle: .alert)
+        let actionTitle = NSLocalizedString("Ok", comment: "Alert ok button title")
+        alertController.addAction(UIAlertAction(title: actionTitle, style: .default, handler: { [weak self] _ in
+            self?.dismiss(animated: true)
+        }))
+        present(alertController, animated: true)
+    }
 }
