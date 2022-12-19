@@ -22,7 +22,6 @@ class ReminderListViewController: UICollectionViewController {
         return progress
     }
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -30,8 +29,7 @@ class ReminderListViewController: UICollectionViewController {
         collectionView.backgroundColor = .todayGradientFutureBegin
         navigationController?.navigationBar.backgroundColor = .clear
         
-        let listLayout = createLayout()
-        collectionView.collectionViewLayout = listLayout
+        collectionView.collectionViewLayout = createLayout()
         
         configureRegisterCell()
         configureRegisterSectionHeader()
@@ -106,7 +104,7 @@ class ReminderListViewController: UICollectionViewController {
         button.accessibilityLabel = NSLocalizedString("Add Reminder", comment: "Add reminder button accessibility label")
     }
     
-    private func createLayout() -> UICollectionViewCompositionalLayout {
+    func createLayout() -> UICollectionViewCompositionalLayout {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
