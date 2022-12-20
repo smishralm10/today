@@ -25,10 +25,8 @@ class HomeViewController: UICollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: false)
-        guard let reminderListViewController = self.storyboard?.instantiateViewController(withIdentifier: "ReminderListViewController") as? ReminderListViewController else {
-            return
-        }
-        
+        let list = lists[indexPath.item]
+        let reminderListViewController = ReminderListViewController(list: list)
         navigationController?.pushViewController(reminderListViewController, animated: true)
     }
     

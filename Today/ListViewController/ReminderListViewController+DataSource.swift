@@ -108,11 +108,11 @@ extension ReminderListViewController {
         return UICellAccessory.CustomViewConfiguration(customView: button, placement: .leading(displayed: .always))
     }
     
-    func prepareReminderStore() {
+    func prepareReminderStore(withIdentifier listIdentifier: List.ID) {
         Task {
             do {
                 try await reminderStore.requestAccess()
-                reminders = try await reminderStore.readAll()
+                reminders = try await reminderStore.readAll(with: listIdentifier)
                 NotificationCenter.default.addObserver(self, selector: #selector(eventStoreChanged(_:)), name: .EKEventStoreChanged, object: nil)
             } catch TodayError.accessDenied, TodayError.accessRestricted {
                 #if DEBUG
@@ -127,7 +127,7 @@ extension ReminderListViewController {
     
     func reminderStoreChanged() {
         Task {
-            reminders = try await reminderStore.readAll()
+            reminders = try await reminderStore.readAll(with: list.id)
             updateSnapshot()
         }
     }

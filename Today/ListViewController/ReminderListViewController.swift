@@ -5,6 +5,7 @@ See LICENSE folder for this sample’s licensing information.
 import UIKit
 
 class ReminderListViewController: UICollectionViewController {
+    let list: List
     var dataSource: DataSource!
     var reminders: [Reminder] = []
     var listStyle: ReminderListStyle = .today
@@ -22,14 +23,21 @@ class ReminderListViewController: UICollectionViewController {
         return progress
     }
     
+    init(list: List) {
+        self.list = list
+        super.init(collectionViewLayout: ReminderListViewController.createLayout())
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configureAddButton()
         collectionView.backgroundColor = .todayGradientFutureBegin
         navigationController?.navigationBar.backgroundColor = .clear
-        
-        collectionView.collectionViewLayout = createLayout()
         
         configureRegisterCell()
         configureRegisterSectionHeader()
@@ -43,7 +51,7 @@ class ReminderListViewController: UICollectionViewController {
         collectionView.dataSource = dataSource
         collectionView.isUserInteractionEnabled = true
         setupLongPressGestureForCollectionViewCell()
-        prepareReminderStore()
+        prepareReminderStore(withIdentifier: list.id)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -104,7 +112,7 @@ class ReminderListViewController: UICollectionViewController {
         button.accessibilityLabel = NSLocalizedString("Add Reminder", comment: "Add reminder button accessibility label")
     }
     
-    func createLayout() -> UICollectionViewCompositionalLayout {
+    static private func createLayout() -> UICollectionViewCompositionalLayout {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         

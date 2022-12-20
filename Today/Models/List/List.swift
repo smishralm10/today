@@ -8,7 +8,7 @@
 import Foundation
 import UIKit.UIColor
 
-struct List: Identifiable {
+struct List: Equatable, Identifiable {
     var id: String = UUID().uuidString
     var name: String
     var color: UIColor = .systemBlue

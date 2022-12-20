@@ -13,7 +13,7 @@ extension EKReminder {
         title = reminder.title
         notes = reminder.notes
         isCompleted = reminder.isComplete
-        calendar = store.defaultCalendarForNewReminders()
+        calendar = store.calendar(withIdentifier: reminder.list.id)
         alarms?.forEach({ alarm in
             guard let absoluteDate = alarm.absoluteDate else { return }
             let comparison = Locale.current.calendar.compare(reminder.dueDate, to: absoluteDate, toGranularity: .minute)

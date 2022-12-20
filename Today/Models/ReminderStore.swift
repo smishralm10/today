@@ -44,16 +44,18 @@ class ReminderStore {
         return ekReminder
     }
     
-    func readAll() async throws -> [Reminder] {
+    func readAll(with identifier: List.ID) async throws -> [Reminder] {
         guard isAvailable else {
             throw TodayError.accessDenied
         }
         
-        let predicate = ekStore.predicateForReminders(in: nil)
+        let calendar = ekStore.calendar(withIdentifier: identifier)!
+        
+        let predicate = ekStore.predicateForReminders(in: [calendar])
         let ekReminders = try await ekStore.fetchReminders(matching: predicate)
         let reminders: [Reminder] = try ekReminders.compactMap({ reminder in
             do {
-                return try Reminder(with: reminder)
+                return try Reminder(with: reminder, calendar: calendar)
             } catch TodayError.reminderHasNoDueDate {
                 return nil
             }
