@@ -38,6 +38,18 @@ extension HomeViewController {
         return lists[index]
     }
     
+    func add(list: List) {
+        var list = list
+        do {
+            let idFromStore = try reminderStore.saveCalendar(list)
+            list.id = idFromStore
+            lists.append(list)
+        } catch TodayError.accessDenied {
+        } catch {
+            showError(error)
+        }
+    }
+    
     func prepareReminderStore() {
         Task {
             do {

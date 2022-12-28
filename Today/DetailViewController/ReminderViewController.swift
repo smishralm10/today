@@ -39,7 +39,6 @@ class ReminderViewController: UICollectionViewController {
         dataSource = DataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, itemIdentifier in
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
         })
-        navigationItem.title = "Reminder"
         updateSnapshotForViewing()
         configureBarButtonMenu()
     }

@@ -91,20 +91,17 @@ class ReminderListViewController: UICollectionViewController {
     
     private func configureAddButton() {
         let widthMultiplier = 0.15
-        let button = UIButton(frame: .zero)
+        let button = CircularButton(ofWidth: view.bounds.width * widthMultiplier)
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 28, weight: .medium)
         let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
         button.setImage(image, for: .normal)
         button.tintColor = .todayPrimaryTint
-        button.layer.cornerRadius = (view.bounds.width * widthMultiplier) / 2
-        button.layer.shadowRadius = 10
-        button.layer.shadowOpacity = 0.3
         button.backgroundColor = .todayAddButtonBackground
         button.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(button)
         //apply contraints
-        button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -25).isActive = true
-        button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
+        button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -50).isActive = true
+        button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         button.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: widthMultiplier).isActive = true
         button.heightAnchor.constraint(equalTo: button.widthAnchor, multiplier: 1).isActive = true //Aspect ratio 1:1
         // add button action

@@ -95,4 +95,19 @@ class ReminderStore {
         try ekStore.save(ekReminder, commit: true)
         return ekReminder.calendarItemIdentifier
     }
+    
+    @discardableResult
+    func saveCalendar(_ list: List) throws -> List.ID {
+        guard isAvailable else { throw TodayError.accessDenied }
+        let ekCalendar: EKCalendar
+        
+        if let calendar = ekStore.calendar(withIdentifier: list.id) {
+            ekCalendar = calendar
+        } else {
+            ekCalendar = EKCalendar(for: .reminder, eventStore: ekStore)
+        }
+        ekCalendar.update(using: list, in: ekStore)
+        try ekStore.saveCalendar(ekCalendar, commit: true)
+        return ekCalendar.calendarIdentifier
+    }
 }
