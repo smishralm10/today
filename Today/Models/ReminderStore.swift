@@ -44,6 +44,13 @@ class ReminderStore {
         return ekReminder
     }
     
+    private func readCalendar(with id: List.ID) throws -> EKCalendar {
+        guard let ekCalendar = ekStore.calendar(withIdentifier: id) else {
+            throw TodayError.failedReadingCalendar
+        }
+        return ekCalendar
+    }
+    
     func readAll(with identifier: List.ID) async throws -> [Reminder] {
         guard isAvailable else {
             throw TodayError.accessDenied
@@ -99,15 +106,25 @@ class ReminderStore {
     @discardableResult
     func saveCalendar(_ list: List) throws -> List.ID {
         guard isAvailable else { throw TodayError.accessDenied }
-        let ekCalendar: EKCalendar
+        var ekCalendar: EKCalendar
         
-        if let calendar = ekStore.calendar(withIdentifier: list.id) {
-            ekCalendar = calendar
-        } else {
+        do {
+            ekCalendar = try readCalendar(with: list.id)
+        } catch {
             ekCalendar = EKCalendar(for: .reminder, eventStore: ekStore)
         }
+        guard let source = getSourceForCalendar() else { throw TodayError.noSourceAvailable }
+        ekCalendar.source = source
         ekCalendar.update(using: list, in: ekStore)
         try ekStore.saveCalendar(ekCalendar, commit: true)
         return ekCalendar.calendarIdentifier
+    }
+    
+    private func getSourceForCalendar() -> EKSource? {
+        return ekStore.sources.first {  $0.sourceType == .local }
+    }
+    
+    func resetStore() {
+        ekStore.reset()
     }
 }

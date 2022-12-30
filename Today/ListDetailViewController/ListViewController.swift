@@ -19,7 +19,7 @@ class ListViewController: UICollectionViewController {
             onChange(list)
         }
     }
-    private let onChange: (List) -> Void
+    var onChange: (List) -> Void
     private var workingList: List
     var dataSource: DataSource!
     let colors: [UIColor] = [.systemBlue, .systemRed, .systemCyan, .systemPink, .systemTeal, .systemMint, .systemBrown, .systemOrange, .systemPurple, .systemIndigo]
@@ -45,7 +45,6 @@ class ListViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath)
         let selectedColor = colors[indexPath.row]
-        guard let selectedItem = dataSource.itemIdentifier(for: indexPath) else { return }
         
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 24, weight: .medium, scale: .small)
         let image = UIImage(systemName: "checkmark", withConfiguration: imageConfig)?.withTintColor(.white, renderingMode: .alwaysOriginal)
