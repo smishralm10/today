@@ -29,4 +29,24 @@ extension HomeViewController {
         let navigationController = UINavigationController(rootViewController: viewController)
         present(navigationController, animated: true)
     }
+    
+@objc func didPressAddReminderButton(_ sender: UIButton) {
+        guard let list = ReminderStore.shared.getDefaultListForReminder() else { return }
+        let reminder = Reminder(title: "", dueDate: Date.now, list: list)
+        let viewController = ReminderViewController(reminder: reminder) { [weak self] reminder in
+            self?.add(reminder: reminder)
+            self?.updateSnapshot(reloading: [reminder.list.id])
+            self?.dismiss(animated: true)
+        }
+        viewController.isAddingNewReminder = true
+        viewController.setEditing(true, animated: true)
+        viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didCancelAddingReminder(_:)))
+        viewController.navigationItem.title = NSLocalizedString("Add Reminder", comment: "Add reminder view controller title")
+        let navigationController = UINavigationController(rootViewController: viewController)
+        present(navigationController, animated: true)
+    }
+    
+    @objc func didCancelAddingReminder(_ sender: UIBarButtonItem) {
+        dismiss(animated: true)
+    }
 }

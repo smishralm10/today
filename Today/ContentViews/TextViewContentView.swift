@@ -2,7 +2,7 @@ import UIKit
 
 class TextViewContentView: UIView, UIContentView {
     struct Configuration: UIContentConfiguration {
-        var text: String? = ""
+        var text: String? = "Notes"
         var onChange: (String) -> Void = { _ in }
         
         func makeContentView() -> UIView & UIContentView {
@@ -24,8 +24,10 @@ class TextViewContentView: UIView, UIContentView {
     init(_ configuration: UIContentConfiguration) {
         self.configuration = configuration
         super.init(frame: .zero)
-        addPinnedSubview(textView, height: 200)
+        addPinnedSubview(textView, height: 100)
         textView.backgroundColor = nil
+        textView.text = "Notes"
+        textView.textColor = .placeholderText
         textView.delegate = self
         textView.font = UIFont.preferredFont(forTextStyle: .body)
     }
@@ -44,6 +46,33 @@ extension TextViewContentView: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         guard let configuration = configuration as? TextViewContentView.Configuration else  { return }
         configuration.onChange(textView.text)
+    }
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let currentText:String = textView.text
+        let updatedText = (currentText as NSString).replacingCharacters(in: range, with: text)
+
+        if updatedText.isEmpty {
+            textView.text = "Notes"
+            textView.textColor = .placeholderText
+            textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
+        }
+        else if textView.textColor == .placeholderText && !text.isEmpty {
+            textView.textColor = .black
+            textView.text = text
+        }
+        else {
+            return true
+        }
+        return false
+    }
+    
+    func textViewDidChangeSelection(_ textView: UITextView) {
+        if let _ = window {
+            if textView.textColor == .lightText {
+                textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
+            }
+        }
     }
 }
 

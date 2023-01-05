@@ -48,6 +48,13 @@ extension ReminderViewController {
         return contentConfiguration
     }
     
+    func listConfiguration(for cell: UICollectionViewListCell) -> UIListContentConfiguration {
+        var contentConfiguration = cell.defaultContentConfiguration()
+        contentConfiguration.text = NSLocalizedString("List", comment: "list section cell text")
+        contentConfiguration.textProperties.font = UIFont.preferredFont(forTextStyle: .title3, compatibleWith: .current)
+        return contentConfiguration
+    }
+    
     func text(for row: Row) -> String? {
         switch row {
         case .viewDate:

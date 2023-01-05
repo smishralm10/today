@@ -10,7 +10,7 @@ import UIKit.UIColor
 import EventKit
 
 extension Reminder {
-    init(with ekReminder: EKReminder, calendar: EKCalendar) throws {
+    init(with ekReminder: EKReminder) throws {
         guard let dueDate = ekReminder.alarms?.first?.absoluteDate else {
             throw TodayError.reminderHasNoDueDate
         }
@@ -19,6 +19,6 @@ extension Reminder {
         self.dueDate = dueDate
         notes = ekReminder.notes
         isComplete = ekReminder.isCompleted
-        list = List(id: calendar.calendarIdentifier, name: calendar.title, color: UIColor(cgColor: calendar.cgColor))
+        list = List(with: ekReminder.calendar)
     }
 }

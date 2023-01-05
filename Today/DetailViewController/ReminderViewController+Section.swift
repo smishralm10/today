@@ -11,8 +11,9 @@ extension ReminderViewController {
     enum Section: Int, Hashable {
         case view
         case title
-        case date
         case notes
+        case date
+        case list
         
         var name: String {
             switch self {
@@ -20,10 +21,12 @@ extension ReminderViewController {
                 return ""
             case .title:
                 return NSLocalizedString("Title", comment: "Title section name")
-            case .date:
-                return NSLocalizedString("Date", comment: "Date section name")
             case .notes:
                 return NSLocalizedString("Notes", comment: "Notes section name")
+            case .date:
+                return NSLocalizedString("Date", comment: "Date section name")
+            default:
+                return ""
             }
         }
     }

@@ -10,6 +10,7 @@ import UIKit
 class HomeViewController: UICollectionViewController {
     var dataSource: DataSource!
     var lists: [List] = []
+    var reminders: [Reminder] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +23,7 @@ class HomeViewController: UICollectionViewController {
         prepareReminderStore()
         updateSnapshot()
         configureFloatingButtons()
+        computeReminderCounts()
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -29,6 +31,9 @@ class HomeViewController: UICollectionViewController {
         let list = lists[indexPath.item]
         let reminderListViewController = ReminderListViewController(list: list)
         navigationController?.pushViewController(reminderListViewController, animated: true)
+    }
+    
+    private func computeReminderCounts() {
     }
     
     private func createListLayout() -> UICollectionViewCompositionalLayout {
@@ -87,5 +92,6 @@ class HomeViewController: UICollectionViewController {
         addReminderButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: addReminderButtonMultiplier).isActive = true
         addReminderButton.heightAnchor.constraint(equalTo: addReminderButton.widthAnchor, multiplier: 1).isActive = true // Aspect ration 1:1
         addReminderButton.bottomAnchor.constraint(equalTo: addListButton.topAnchor, constant: -20).isActive = true
+        addReminderButton.addTarget(self, action: #selector(didPressAddReminderButton(_:)), for: .touchUpInside)
     }
 }

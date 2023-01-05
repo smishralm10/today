@@ -24,10 +24,7 @@ class TextFieldContentView: UIView, UIContentView {
     init(_ configuration: UIContentConfiguration) {
         self.configuration = configuration
         super.init(frame: .zero)
-        addPinnedSubview(textField, insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
-        textField.clearButtonMode = .whileEditing
-        textField.addTarget(self, action: #selector(didChange(_:)), for: .editingChanged)
-        textField.becomeFirstResponder()
+        setupView()
     }
     
     required init?(coder: NSCoder) {
@@ -42,6 +39,14 @@ class TextFieldContentView: UIView, UIContentView {
     func configuration(configuration: UIContentConfiguration) {
         guard let configuration = configuration as? Configuration else { return }
         textField.text = configuration.text
+    }
+    
+    func setupView() {
+        addPinnedSubview(textField, insets: UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
+        textField.clearButtonMode = .whileEditing
+        textField.placeholder = NSLocalizedString("Title", comment: "placeholder for reminder title textfield")
+        textField.contentMode = .scaleAspectFit
+        textField.addTarget(self, action: #selector(didChange(_:)), for: .editingChanged)
     }
 }
 

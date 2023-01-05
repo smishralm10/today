@@ -28,7 +28,6 @@ class ReminderViewController: UICollectionViewController {
         self.onChange = onChange
         var listConfiguartion = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
         listConfiguartion.showsSeparators = false
-        listConfiguartion.headerMode = .firstItemInSection
         let listLayout = UICollectionViewCompositionalLayout.list(using: listConfiguartion)
         super.init(collectionViewLayout: listLayout)
     }
@@ -72,7 +71,7 @@ class ReminderViewController: UICollectionViewController {
     private func updateSnapshotForViewing() {
         var snapshot = Snapshot()
         snapshot.appendSections([.view])
-        snapshot.appendItems([.header(""), .viewTitle, .viewDate, .viewTime, .viewNotes], toSection: .view)
+        snapshot.appendItems([.viewTitle, .viewDate, .viewTime, .viewNotes], toSection: .view)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
@@ -86,10 +85,11 @@ class ReminderViewController: UICollectionViewController {
     
     private func updateSnapshotForEditing() {
         var snapshot = Snapshot()
-        snapshot.appendSections([.title, .date, .notes])
-        snapshot.appendItems([.header(Section.title.name), .editText(reminder.title)], toSection: .title)
-        snapshot.appendItems([.header(Section.date.name), .editDate(reminder.dueDate)], toSection: .date)
-        snapshot.appendItems([.header(Section.notes.name), .editText(reminder.notes)], toSection: .notes)
+        snapshot.appendSections([.title, .notes, .date, .list])
+        snapshot.appendItems([.editText(reminder.title)], toSection: .title)
+        snapshot.appendItems([.editText(reminder.notes)], toSection: .notes)
+        snapshot.appendItems([.editDate(reminder.dueDate)], toSection: .date)
+        snapshot.appendItems([.editList], toSection: .list)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
@@ -102,16 +102,22 @@ class ReminderViewController: UICollectionViewController {
     func cellRegistrationHandler(cell: UICollectionViewListCell, indexPath: IndexPath, row: Row) {
         let section = section(for: indexPath)
         switch (section, row) {
-        case(_, .header(let title)):
-            cell.contentConfiguration = headerConfiguration(for: cell, with: title)
         case(.view, _):
             cell.contentConfiguration = defualtConfiguration(for: cell, at: row)
         case(.title, .editText(let title)):
             cell.contentConfiguration = titleConfiguartion(for: cell, with: title)
-        case(.date, .editDate(let date)):
-            cell.contentConfiguration = dateConfiguration(for: cell, with: date)
         case(.notes, .editText(let notes)):
             cell.contentConfiguration = notesConfiguration(for: cell, with: notes)
+        case(.date, .editDate(let date)):
+            cell.contentConfiguration = dateConfiguration(for: cell, with: date)
+        case(.list, .editList):
+            var labelAccessoryOptions = UICellAccessory.LabelOptions()
+            labelAccessoryOptions.tintColor = reminder.list.color
+            cell.contentConfiguration = listConfiguration(for: cell)
+            cell.accessories = [
+                .label(text: reminder.list.name, options: labelAccessoryOptions),
+                .disclosureIndicator(displayed: .always)
+            ]
         default:
             fatalError("No matching combination for section and row")
         }

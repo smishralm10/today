@@ -15,21 +15,31 @@ extension HomeViewController {
     private var reminderStore: ReminderStore { ReminderStore.shared }
     
     func cellRegistrationHandler(cell: UICollectionViewListCell, indexPath: IndexPath, id: List.ID) {
-       let list = list(for: id)
+        let list = list(for: id)
+        let count = reminderCounts(for: id)
+        let listIcon = UIImage(systemName: "list.bullet.circle.fill")
         var contentConfig = cell.defaultContentConfiguration()
         contentConfig.text = list.name
         contentConfig.textProperties.font = UIFont.preferredFont(forTextStyle: .title3)
-        contentConfig.image = UIImage(systemName: "list.bullet.circle.fill")
+        contentConfig.image = listIcon
         contentConfig.imageProperties.tintColor = list.color
         contentConfig.imageProperties.preferredSymbolConfiguration = UIImage.SymbolConfiguration(textStyle: .title1)
         contentConfig.imageProperties.maximumSize = CGSize(width: 40, height: 40)
         cell.contentConfiguration = contentConfig
+        cell.accessories = [.label(text: String(count)), .disclosureIndicator(displayed: .always)]
     }
     
-    func updateSnapshot() {
+    func reminderCounts(for identifier: List.ID) -> Int {
+        return reminders.filter { $0.list.id == identifier }.count
+    }
+    
+    func updateSnapshot(reloading idsThatChanged: [List.ID] = []) {
         var snapshot = Snapshot()
         snapshot.appendSections([0])
         snapshot.appendItems(lists.map { $0.id })
+        if !idsThatChanged.isEmpty {
+            snapshot.reloadItems(idsThatChanged)
+        }
         dataSource.apply(snapshot)
     }
     
@@ -50,11 +60,24 @@ extension HomeViewController {
         }
     }
     
+    func add(reminder: Reminder) {
+        var reminder = reminder
+        do {
+            let idFromStore = try reminderStore.save(reminder)
+            reminder.id = idFromStore
+            reminders.append(reminder)
+        } catch TodayError.accessDenied {
+        } catch {
+            showError(error)
+        }
+    }
+    
     func prepareReminderStore() {
         Task {
             do {
                 try await reminderStore.requestAccess()
                 lists = reminderStore.fetchLists()
+                reminders = try await reminderStore.readAll()
                 NotificationCenter.default.addObserver(self, selector: #selector(eventStoreChanged(_:)), name: .EKEventStoreChanged, object: nil)
             } catch TodayError.accessDenied, TodayError.accessRestricted {
                 #if DEBUG
@@ -68,7 +91,10 @@ extension HomeViewController {
     }
     
     func reminderStoreChanged() {
-        lists = reminderStore.fetchLists()
-        updateSnapshot()
+        Task {
+            lists = reminderStore.fetchLists()
+            reminders = try await reminderStore.readAll()
+            updateSnapshot(reloading: lists.map { $0.id })
+        }
     }
 }
