@@ -29,6 +29,7 @@
 		E1049E7C293DCC9B00FE6896 /* DatePickerContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1049E7B293DCC9B00FE6896 /* DatePickerContentView.swift */; };
 		E1131ABF294F324E003C4EE9 /* List.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1131ABE294F324D003C4EE9 /* List.swift */; };
 		E1131AC1294F3556003C4EE9 /* HomeViewController+DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1131AC0294F3556003C4EE9 /* HomeViewController+DataSource.swift */; };
+		E11E56202966CFBA0065B55B /* SelectListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11E561F2966CFBA0065B55B /* SelectListViewController.swift */; };
 		E11ED7A429385D7000DC17AD /* ReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11ED7A329385D7000DC17AD /* ReminderViewController.swift */; };
 		E11ED7A72938850400DC17AD /* ReminderViewController+Row.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11ED7A62938850400DC17AD /* ReminderViewController+Row.swift */; };
 		E11ED7A92938F2B300DC17AD /* ReminderViewController+Section.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11ED7A82938F2B300DC17AD /* ReminderViewController+Section.swift */; };
@@ -76,6 +77,7 @@
 		E1049E7B293DCC9B00FE6896 /* DatePickerContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerContentView.swift; sourceTree = "<group>"; };
 		E1131ABE294F324D003C4EE9 /* List.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = List.swift; sourceTree = "<group>"; };
 		E1131AC0294F3556003C4EE9 /* HomeViewController+DataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeViewController+DataSource.swift"; sourceTree = "<group>"; };
+		E11E561F2966CFBA0065B55B /* SelectListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectListViewController.swift; sourceTree = "<group>"; };
 		E11ED7A329385D7000DC17AD /* ReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderViewController.swift; sourceTree = "<group>"; };
 		E11ED7A62938850400DC17AD /* ReminderViewController+Row.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReminderViewController+Row.swift"; sourceTree = "<group>"; };
 		E11ED7A82938F2B300DC17AD /* ReminderViewController+Section.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReminderViewController+Section.swift"; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 				E11ED7A62938850400DC17AD /* ReminderViewController+Row.swift */,
 				E11ED7A82938F2B300DC17AD /* ReminderViewController+Section.swift */,
 				E1B24E40293B26BE0028EEB3 /* ReminderViewController+cellConfiguration.swift */,
+				E11E561F2966CFBA0065B55B /* SelectListViewController.swift */,
 			);
 			path = DetailViewController;
 			sourceTree = "<group>";
@@ -354,6 +357,7 @@
 				E11ED7A429385D7000DC17AD /* ReminderViewController.swift in Sources */,
 				E100B4FA293F803E00B723F2 /* CAGradientLayer+ListStyle.swift in Sources */,
 				7CB07732270FAF0E0042FB15 /* Reminder.swift in Sources */,
+				E11E56202966CFBA0065B55B /* SelectListViewController.swift in Sources */,
 				E19CC74F29509CE40093AB9C /* List+EKCalendar.swift in Sources */,
 				E168F9572948CCA600330AB4 /* ReminderStore.swift in Sources */,
 				E13E707B294B5C5000846C6A /* EKReminder+Reminder.swift in Sources */,

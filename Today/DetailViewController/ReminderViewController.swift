@@ -60,7 +60,10 @@ class ReminderViewController: UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: true)
+        let section = section(for: indexPath)
+        print(indexPath)
+        if section == .list {
+        }
     }
     
     @objc func didCancelEdit() {
@@ -83,13 +86,16 @@ class ReminderViewController: UICollectionViewController {
         updateSnapshotForViewing()
     }
     
-    private func updateSnapshotForEditing() {
+    private func updateSnapshotForEditing(reloading row: [Row] = []) {
         var snapshot = Snapshot()
         snapshot.appendSections([.title, .notes, .date, .list])
         snapshot.appendItems([.editText(reminder.title)], toSection: .title)
         snapshot.appendItems([.editText(reminder.notes)], toSection: .notes)
         snapshot.appendItems([.editDate(reminder.dueDate)], toSection: .date)
         snapshot.appendItems([.editList], toSection: .list)
+        if !row.isEmpty {
+            snapshot.reloadItems([.editList])
+        }
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
@@ -112,16 +118,26 @@ class ReminderViewController: UICollectionViewController {
             cell.contentConfiguration = dateConfiguration(for: cell, with: date)
         case(.list, .editList):
             var labelAccessoryOptions = UICellAccessory.LabelOptions()
-            labelAccessoryOptions.tintColor = reminder.list.color
+            labelAccessoryOptions.tintColor = workingReminder.list.color
             cell.contentConfiguration = listConfiguration(for: cell)
             cell.accessories = [
-                .label(text: reminder.list.name, options: labelAccessoryOptions),
+                .label(text: workingReminder.list.name, options: labelAccessoryOptions),
                 .disclosureIndicator(displayed: .always)
             ]
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapSelectListCell(_:)))
+            cell.addGestureRecognizer(tapGesture)
         default:
             fatalError("No matching combination for section and row")
         }
         cell.tintColor = .todayPrimaryTint
+    }
+    
+    @objc func didTapSelectListCell(_ sender: UITapGestureRecognizer) {
+        let viewController = SelectListViewController(list: self.reminder.list) { [weak self] list in
+            self?.workingReminder.list = list
+            self?.updateSnapshotForEditing(reloading: [.editList])
+        }
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
     
     private func section(for indexPath: IndexPath) -> Section {

@@ -23,7 +23,6 @@ class HomeViewController: UICollectionViewController {
         prepareReminderStore()
         updateSnapshot()
         configureFloatingButtons()
-        computeReminderCounts()
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -31,9 +30,6 @@ class HomeViewController: UICollectionViewController {
         let list = lists[indexPath.item]
         let reminderListViewController = ReminderListViewController(list: list)
         navigationController?.pushViewController(reminderListViewController, animated: true)
-    }
-    
-    private func computeReminderCounts() {
     }
     
     private func createListLayout() -> UICollectionViewCompositionalLayout {
