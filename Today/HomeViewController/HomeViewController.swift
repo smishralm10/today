@@ -40,7 +40,27 @@ class HomeViewController: UICollectionViewController {
     private func createListLayout() -> UICollectionViewCompositionalLayout {
         var listConfig = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
         listConfig.showsSeparators = true
+        listConfig.trailingSwipeActionsConfigurationProvider = trailingSwipeActionsConfigurationProvider
         return UICollectionViewCompositionalLayout.list(using: listConfig)
+    }
+    
+    private func trailingSwipeActionsConfigurationProvider(indexPath: IndexPath) -> UISwipeActionsConfiguration {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] action, view, completion in
+            guard let self = self else { return }
+            
+            let identifier = self.dataSource.itemIdentifier(for: indexPath)
+            
+            guard let identifier = identifier else { return }
+
+            if self.reminderCounts(for: identifier) > 0 {
+                self.presentConfirmDeleteAlert(for: identifier)
+            } else {
+                self.deleteList(with: identifier)
+            }
+            completion(true)
+        }
+        let swipeActionConfig = UISwipeActionsConfiguration(actions: [deleteAction])
+        return swipeActionConfig
     }
     
     private func registerCellWithDataSource() {
@@ -94,5 +114,22 @@ class HomeViewController: UICollectionViewController {
         addReminderButton.heightAnchor.constraint(equalTo: addReminderButton.widthAnchor, multiplier: 1).isActive = true // Aspect ration 1:1
         addReminderButton.bottomAnchor.constraint(equalTo: addListButton.topAnchor, constant: -20).isActive = true
         addReminderButton.addTarget(self, action: #selector(didPressAddReminderButton(_:)), for: .touchUpInside)
+    }
+    
+    func presentConfirmDeleteAlert(for id: List.ID) {
+        let list = list(for: id)
+        let alertController = UIAlertController(title: "Delete list \"\(list.name)\"?", message: "This will delete all reminders in the list", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { [weak self] _ in
+            self?.dismiss(animated: true)
+        }
+        let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { [weak self] alertAction in
+            self?.deleteList(with: id)
+            self?.updateSnapshot()
+            self?.dismiss(animated: true)
+        }
+        
+        alertController.addAction(cancelAction)
+        alertController.addAction(deleteAction)
+        present(alertController, animated: true)
     }
 }

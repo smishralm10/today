@@ -65,7 +65,7 @@ class ReminderStore {
         
         var predicate: NSPredicate
         if let identifier = identifier {
-            let calendar = ekStore.calendar(withIdentifier: identifier)!
+            let calendar = try readCalendar(with: identifier)
             predicate = ekStore.predicateForReminders(in: [calendar])
         } else {
             predicate = ekStore.predicateForReminders(in: nil)
@@ -97,6 +97,14 @@ class ReminderStore {
         }
         let ekReminder = try read(with: id)
         try ekStore.remove(ekReminder, commit: true)
+    }
+    
+    func removeCalendar(with id: List.ID) throws {
+        guard isAvailable else {
+            throw TodayError.accessDenied
+        }
+        let ekCalendar = try readCalendar(with: id)
+        try ekStore.removeCalendar(ekCalendar, commit: true)
     }
     
     @discardableResult

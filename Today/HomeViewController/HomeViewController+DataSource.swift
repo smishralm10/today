@@ -103,6 +103,17 @@ extension HomeViewController {
         }
     }
     
+    func deleteList(with id: List.ID) {
+        do {
+            try reminderStore.removeCalendar(with: id)
+            let index = lists.indexOfList(with: id)
+            lists.remove(at: index)
+        } catch TodayError.accessDenied {
+        } catch {
+            showError(error)
+        }
+    }
+    
     func prepareReminderStore() {
         Task {
             do {
