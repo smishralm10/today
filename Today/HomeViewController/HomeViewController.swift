@@ -16,6 +16,7 @@ class HomeViewController: UICollectionViewController {
         super.viewDidLoad()
         title = NSLocalizedString("My Lists", comment: "home viewcontroller title")
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.rightBarButtonItem = editButtonItem
         
         collectionView.collectionViewLayout = createListLayout()
         collectionView.dataSource = dataSource
@@ -23,6 +24,10 @@ class HomeViewController: UICollectionViewController {
         prepareReminderStore()
         updateSnapshot()
         configureFloatingButtons()
+    }
+    
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

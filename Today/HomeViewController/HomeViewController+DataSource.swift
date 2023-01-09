@@ -26,9 +26,29 @@ extension HomeViewController {
         contentConfig.imageProperties.preferredSymbolConfiguration = UIImage.SymbolConfiguration(textStyle: .title1)
         contentConfig.imageProperties.maximumSize = CGSize(width: 40, height: 40)
         cell.contentConfiguration = contentConfig
-        cell.accessories = [.label(text: String(count)), .disclosureIndicator(displayed: .always)]
+        if #available(iOS 15.4, *) {
+            let detailActionHandler = createListDetailActionHandler(with: id)
+            cell.accessories = [.delete(), .label(text: String(count)), .disclosureIndicator(displayed: .whenNotEditing), .detail(displayed: .whenEditing, actionHandler: detailActionHandler)]
+        } else {
+            cell.accessories = [.delete(), .label(text: String(count)), .disclosureIndicator(displayed: .whenNotEditing)]
+        }
     }
     
+    func createListDetailActionHandler(with id: List.ID) -> UICellAccessory.ActionHandler {
+        let list = list(for: id)
+        let actionHandler = { [weak self] in
+            let viewController = ListViewController(list: list) { [weak self] list in
+                self?.update(list, with: id)
+                self?.updateSnapshot(reloading: [id])
+                self?.dismiss(animated: true)
+            }
+            viewController.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(self?.didPressCancel(_:)) )
+            let navigationController = UINavigationController(rootViewController: viewController)
+            self?.present(navigationController, animated: true)
+        }
+        return actionHandler
+    }
+        
     func reminderCounts(for identifier: List.ID) -> Int {
         return reminders.filter { $0.list.id == identifier }.count
     }
@@ -66,6 +86,17 @@ extension HomeViewController {
             let idFromStore = try reminderStore.save(reminder)
             reminder.id = idFromStore
             reminders.append(reminder)
+        } catch TodayError.accessDenied {
+        } catch {
+            showError(error)
+        }
+    }
+    
+    func update(_ list: List, with id: List.ID) {
+        do {
+            try reminderStore.saveCalendar(list)
+            let index = lists.indexOfList(with: id)
+            lists[index] = list
         } catch TodayError.accessDenied {
         } catch {
             showError(error)
